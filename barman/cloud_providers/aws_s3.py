@@ -471,7 +471,8 @@ class AwsCloudSnapshotInterface(CloudSnapshotInterface):
         lock_mode=None,
         lock_duration=None,
         lock_cool_off_period=None,
-        lock_expiration_date=None
+        lock_expiration_date=None,
+        tags=None
     ):
         """
         Creates the client necessary for creating and managing snapshots.
@@ -498,6 +499,7 @@ class AwsCloudSnapshotInterface(CloudSnapshotInterface):
         self.lock_duration = lock_duration
         self.lock_cool_off_period = lock_cool_off_period
         self.lock_expiration_date = lock_expiration_date
+        self.tags = tags
 
     def _get_waiter_config(self):
         delay = 15
@@ -730,13 +732,20 @@ class AwsCloudSnapshotInterface(CloudSnapshotInterface):
             volume_name,
             volume_id,
         )
+        tags = [
+            {"Key": "Name", "Value": snapshot_name},
+        ]
+
+        if self.tags is not None:
+            for tag in self.tags:
+                key, value = tag
+                tags.append({"Key": key, "Value": value})
+
         resp = self.ec2_client.create_snapshot(
             TagSpecifications=[
                 {
                     "ResourceType": "snapshot",
-                    "Tags": [
-                        {"Key": "Name", "Value": snapshot_name},
-                    ],
+                    "Tags": tags,
                 }
             ],
             VolumeId=volume_id,

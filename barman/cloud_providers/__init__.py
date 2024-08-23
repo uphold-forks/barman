@@ -205,6 +205,7 @@ def get_snapshot_interface(config):
             config.aws_snapshot_lock_duration,
             config.aws_snapshot_lock_cool_off_period,
             config.aws_snapshot_lock_expiration_date,
+            config.tags,
         ]
         return AwsCloudSnapshotInterface(*args)
     else:
@@ -261,6 +262,7 @@ def get_snapshot_interface_from_server_config(server_config):
             server_config.aws_snapshot_lock_duration,
             server_config.aws_snapshot_lock_cool_off_period,
             server_config.aws_snapshot_lock_expiration_date,
+            server_config.tags,
         )
     else:
         raise CloudProviderUnsupported(
